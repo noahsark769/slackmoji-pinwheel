@@ -1,9 +1,28 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import React, { useState } from 'react'
+import { isContext } from 'vm'
 import styles from '../styles/Home.module.css'
 
+const Input: React.VFC<{ value: string, onChange(value: string): void }> = (props) => {
+  return <input className="p-2 bg-gray-100" value={props.value} onChange={(e) => props.onChange(e.target.value)}></input>
+}
+
+const Checkbox: React.VFC<{ id: string, label: string, value: boolean, onChange(value: boolean): void }> = (props) => {
+  return <div className="p-2 flex flex-row items-center">
+    <input className="mr-2" type="checkbox" checked={props.value} id={props.id} onChange={(e) => props.onChange(e.target.checked)} />
+    <label htmlFor={props.id}>{props.label}</label>
+  </div>
+}
+
 const Home: NextPage = () => {
+  let [duration, setDuration] = useState("1.75")
+  let [isClockwise, setIsClockwise] = useState(true)
+  let [color1, setColor1] = useState("#000000")
+  let [color2, setColor2] = useState("#ffffff")
+  let [text, setText] = useState("GM")
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,43 +32,62 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        <div className="flex flex-col items-center justify-start mb-1">
+          <div className="flex flex-col items-start">
+            <span>Duration</span>
+            <Input value={duration} onChange={(v) => setDuration(v)} />
+          </div>
+          <div className="flex flex-col items-start">
+            <span>Color 1</span>
+            <Input value={color1} onChange={(v) => setColor1(v)} />
+          </div>
+          <div className="flex flex-col items-start">
+            <span>Color 2</span>
+            <Input value={color2} onChange={(v) => setColor2(v)} />
+          </div>
+          <div className="flex flex-col items-start">
+            <span>Text</span>
+            <Input value={text} onChange={(v) => setText(v)} />
+          </div>
+          <div className="flex flex-col items-start">
+            <Checkbox value={isClockwise} onChange={(v) => setIsClockwise(v)} id="clockwise" label="Clockwise?" />
+          </div>
+        </div>
+        <div className="w-full flex flex-row items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="260px" height="260px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+            <g>
+              <path d="M50 50Q127 11.5 127 50 A77 77 0 0 0 116.68395609140175 11.499999999999964 Q97.43395609140174 -21.841978045700913 50 50" stroke="none" fill={color1}></path>
+              <path d="M50 50Q135.93395609140177 55.15802195429911 116.68395609140178 88.5 A77 77 0 0 0 127 50 Q127 11.5 50 50" stroke="none" fill={color2}></path>
+              <path d="M50 50Q121.84197804570088 97.43395609140177 88.5 116.68395609140177 A77 77 0 0 0 116.68395609140178 88.5 Q135.93395609140177 55.15802195429911 50 50" stroke="none" fill={color1}></path>
+              <path d="M50 50Q88.5 127 50.00000000000001 127 A77 77 0 0 0 88.5 116.68395609140177 Q121.84197804570088 97.43395609140177 50 50" stroke="none" fill={color2}></path>
+              <path d="M50 50Q44.841978045700905 135.93395609140177 11.500000000000014 116.68395609140178 A77 77 0 0 0 50.00000000000001 127 Q88.5 127 50 50" stroke="none" fill={color1}></path>
+              <path d="M50 50Q2.566043908598214 121.8419780457009 -16.683956091401782 88.5 A77 77 0 0 0 11.500000000000014 116.68395609140178 Q44.841978045700905 135.93395609140177 50 50" stroke="none" fill={color2}></path>
+              <path d="M50 50Q-26.999999999999996 88.5 -27 50.00000000000001 A77 77 0 0 0 -16.683956091401782 88.5 Q2.566043908598214 121.8419780457009 50 50" stroke="none" fill={color1}></path>
+              <path d="M50 50Q-35.93395609140177 44.84197804570091 -16.683956091401782 11.500000000000021 A77 77 0 0 0 -27 50.00000000000001 Q-26.999999999999996 88.5 50 50" stroke="none" fill={color2}></path>
+              <path d="M50 50Q-21.84197804570092 2.5660439085982496 11.499999999999964 -16.683956091401768 A77 77 0 0 0 -16.683956091401782 11.500000000000021 Q-35.93395609140177 44.84197804570091 50 50" stroke="none" fill={color1}></path>
+              <path d="M50 50Q11.499999999999986 -26.999999999999993 49.999999999999986 -27 A77 77 0 0 0 11.499999999999964 -16.683956091401768 Q-21.84197804570092 2.5660439085982496 50 50" stroke="none" fill={color2}></path>
+              <path d="M50 50Q55.158021954299116 -35.93395609140177 88.5 -16.683956091401768 A77 77 0 0 0 49.999999999999986 -27 Q11.499999999999986 -26.999999999999993 50 50" stroke="none" fill={color1}></path>
+              <path d="M50 50Q97.43395609140174 -21.841978045700913 116.68395609140175 11.499999999999964 A77 77 0 0 0 88.5 -16.683956091401768 Q55.158021954299116 -35.93395609140177 50 50" stroke="none" fill={color2}></path>
+              <animateTransform attributeName="transform" type="rotate" values={`0 50 50;${isClockwise ? "" : "-"}360 50 50`} times="0;1" dur="2.4499999999999997s" repeatCount="indefinite"></animateTransform>
+            </g>
+            <g width="100%" height="100%" style={{ transformOrigin: "center" }}>
+              <text x="50%" y="50%" style={{ fill: "white", dominantBaseline: "central", textAnchor: "middle", fontSize: "40px", paintOrder: "stroke", stroke: "#000000", strokeWidth: "5px", strokeLinecap: "button", strokeLinejoin: "miter", fontWeight: 800 }}>{text}</text>
+              <animateTransform attributeName="transform"
+                id="anim1"
+                attributeType="XML"
+                type="rotate"
+                values="35;0;-35;0;35"
+                dur={`${duration}s`}
+                repeatCount="indefinite" />
+              <animateTransform attributeName="transform"
+                id="anim2"
+                additive="sum"
+                type="scale"
+                values="1;1.5;1;1.5;1"
+                dur={`${duration}s`}
+                repeatCount="indefinite" />
+            </g>
+          </svg>
         </div>
       </main>
 
